@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EmpleadosController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,9 +25,12 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/empleados', [EmpleadosController::class, 'index'])->name('empleados');
+    Route::get('/nuevo-empleado', [EmpleadosController::class, 'create'])->name('nuevo-empleado');
+    Route::post('/guardar-empleado', [EmpleadosController::class, 'store'])->name('guardar-empleado');
+    Route::get('/editar-empleado/{id}', [EmpleadosController::class, 'edit'])->name('editar-empleado');
+    Route::post('/actualizar-empleado', [EmpleadosController::class, 'update'])->name('actualizar-empleado');
+    Route::delete('/eliminar-empleado/{id}', [EmpleadosController::class, 'delete'])->name('eliminar-empleado');
 });
 
 require __DIR__.'/auth.php';

@@ -17,6 +17,7 @@ return new class extends Migration
 
         $query = DB::table('empleados')->select(
             'id',
+            'nombre',
             'apellido_paterno',
             'apellido_materno',
             'email',
