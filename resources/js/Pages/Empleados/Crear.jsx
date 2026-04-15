@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { Head, useForm, router, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, router, usePage } from '@inertiajs/react';
 
 const Crear = ({ auth }) => {
 
@@ -43,6 +43,27 @@ const Crear = ({ auth }) => {
             <Head title="Nuevo empleado" />
 
             <div className="py-12">
+                <div className="max-w-[80%] mx-auto">
+                    <div className="grid grid-cols-1">
+                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                            <div className="p-6 text-gray-900">
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                                    <Link href={'/cargar-empleados'}>
+                                        <PrimaryButton
+                                            type="submit"
+                                            className={`w-full btn mx-0 flex items-center justify-center md:mx-auto border-2  py-2 px-4 rounded-md`}
+                                            >
+                                            Cargar más de un empleado
+                                        </PrimaryButton>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="py-1">
                 <div className="max-w-[80%] mx-auto">
                     <form onSubmit={guardarDatos} >
                         <div className="grid grid-cols-1 gap-4 mt-4">

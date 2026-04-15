@@ -39,9 +39,9 @@ const Editar = ({ auth }) => {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Nuevo empleado</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Editar empleado</h2>}
         >
-            <Head title="Nuevo empleado" />
+            <Head title="Editar empleado" />
 
             <div className="py-12">
                 <div className="max-w-[80%] mx-auto">

@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use App\Models\Empleado;
 
+use App\Imports\EmpleadosImport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class EmpleadosController extends Controller
 {
     public function index(){
@@ -100,6 +103,20 @@ class EmpleadosController extends Controller
         $empleado = Empleado::where('id', $id)->first();
         
         $empleado->delete();
+
+        return redirect('/empleados');
+    }
+
+    public function agregarEmpleados (){
+        return Inertia::render('Empleados/Excel');
+    }
+
+    public function cargarEmpleados (Request $request){
+        $this->validate($request, [
+            'file' => 'required|file|mimes:xls, xlsx',
+        ]);
+
+        Excel::import(new EmpleadosImport, 'empleados.xlsx');
 
         return redirect('/empleados');
     }

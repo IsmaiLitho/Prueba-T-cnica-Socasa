@@ -31,6 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/editar-empleado/{id}', [EmpleadosController::class, 'edit'])->name('editar-empleado');
     Route::post('/actualizar-empleado', [EmpleadosController::class, 'update'])->name('actualizar-empleado');
     Route::delete('/eliminar-empleado/{id}', [EmpleadosController::class, 'delete'])->name('eliminar-empleado');
+    
+    Route::get('/cargar-empleados', [EmpleadosController::class, 'agregarEmpleados'])->name('cargar-empleados');
+    Route::post('/cargar-empleados', [EmpleadosController::class, 'cargarEmpleados'])->name('cargar-empleados');
 });
 
 require __DIR__.'/auth.php';
