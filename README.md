@@ -1,7 +1,7 @@
 # Prueba Técnica Socasa
 
 ## Descripción
-Este proyecto es un sistema de gestión de órdenes con productos y descuentos, desarrollado con **Laravel 10**.  
+Este proyecto es un sistema de gestión de empleados, desarrollado con **Laravel 10 y ReactJs**.  
 Permite crear órdenes, validar códigos de descuento y manejar múltiples productos por orden.
 
 ---
@@ -9,7 +9,7 @@ Permite crear órdenes, validar códigos de descuento y manejar múltiples produ
 ## Requisitos
 - PHP >= 8.1
 - Composer
-- Postman o cliente API para probar endpoints
+- NodeJs
 
 ---
 
@@ -18,13 +18,13 @@ Permite crear órdenes, validar códigos de descuento y manejar múltiples produ
 1. Clonar el repositorio:
 
 ```bash
-git clone https://github.com/IsmaiLitho/nullData-prueba-backend.git
+git clone https://github.com/IsmaiLitho/Prueba-T-cnica-Socasa.git
 ```
 
 2. Entrar al proyecto:
 
 ```bash
-cd nullData-prueba-backend
+cd Prueba-T-cnica-Socasa
 ```
 
 3. Instalar dependencias de PHP:
@@ -41,10 +41,32 @@ composer install
 php artisan key:generate
 ```
 
-6. Iniciar servidor
+6. Instalar dependencias de node
+
+```bash
+npm run dev
+```
+
+7. Ejecutar migraciones y vistas de sql
+
+```bash
+php artisan migrate
+```
+
+8. Ejecutar seeders para usuarios de prueba (opcional)
 
 ```bash
 php artisan serv
 ```
 
-7. Entrar al endpoin mediante Postman o cliente API para probar endpoints, el endpoin es api/orders/calculate
+9. Iniciar servidor de Laravel
+
+```bash
+php artisan serv
+```
+
+10. Iniciar servidor para compilacion del front end 
+
+```bash
+npm run dev
+```
