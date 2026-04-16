@@ -1,65 +1,80 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { Head, Link, useForm, router, usePage } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
+import axios from 'axios';
 
 const Crear = ({ auth }) => {
-
-    const { data, setData, get, processing, reset } = useForm({
-        nombre: '',
-        apellido_paterno:'',
-        apellido_materno:'',
-        email:'',
-        telefono:'',
-        calle:'',
-        numero_interior:'',
-        estado:'',
-        municipio:'',
-    });
-
     const { errors } = usePage().props;
+    const [errorExcelEmpleados, setErrorExcelEmpleados] = useState(null);
+    const [fileEmpleados, setFileEmpleados] = useState(null);
+    const [cargando, setCargando] = useState(false);
 
-    const guardarDatos = (e) => {
-        e.preventDefault();
-        
-        router.visit('/guardar-empleado', {
-            method: 'post',
-            data: data,
-            forceFormData: true,
-            //onBefore: () => setLoader(true),
-            onSuccess: response => console.log(response),
-            onError: errorsResponse => console.log(errorsResponse),
-            //onFinish: () => setLoader(false),
-        })
-    };
-
-    const cargarFolios = async (e) => {
+    const cargarArchivo = (e) => {
         const file = e.target.files[0];
         if (!file) return;
         
-        setFileFolios(file);
+        // Validar que sea un archivo Excel
+        const extensionesValidas = ['.xlsx', '.xls',];
+        const nombreArchivo = file.name;
+        const extension = nombreArchivo.substring(nombreArchivo.lastIndexOf('.')).toLowerCase();
         
+        if (!extensionesValidas.includes(extension)) {
+            setErrorExcelEmpleados({ archivo: 'Solo se permiten archivos Excel (.xlsx, .xls)' });
+            setFileEmpleados(null);
+            e.target.value = ''; // Limpiar el input
+            return;
+        }
+        
+        setFileEmpleados(file);
+        setErrorExcelEmpleados(null);
+    };
+
+    const cargarEmpleados = async (e) => {
+        e.preventDefault();
+
+        if (!fileEmpleados) {
+            setErrorExcelEmpleados({ msg: 'Se debe cargar un archivo para continuar' });
+            return;
+        }
+        
+        setCargando(true);
         const formData = new FormData();
-        formData.append('fileFolios', file);
+        formData.append('fileEmpleados', fileEmpleados);
         
         try {
-            const response = await axios.post('/cargar-folios', formData, {
+            const response = await axios.post('/cargar-empleados', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
             
-            console.log('respueta de folios ',response.data);
-            setData('folios',response.data.data);
-            setErrorFolios(null);
+            console.log('Respuesta de empleados:', response.data);
+            
+            // Éxito - limpiar formulario
+            setFileEmpleados(null);
+            setErrorExcelEmpleados(null);
+            // Limpiar el input file
+            const fileInput = document.getElementById('fileEmpleados');
+            if (fileInput) fileInput.value = '';
+            
+            // Mostrar mensaje de éxito (opcional)
+            alert('Empleados importados correctamente');
+            
         } catch (error) {
+            console.error('Error al cargar empleados:', error);
+            
             if (error.response && error.response.data && error.response.data.errors) {
-                setErrorFolios(error.response.data.errors);
+                setErrorExcelEmpleados(error.response.data.errors);
+            } else if (error.response && error.response.data && error.response.data.message) {
+                setErrorExcelEmpleados({ general: error.response.data.message });
             } else {
-                setErrorFolios({ general: 'Error inesperado' });
+                setErrorExcelEmpleados({ general: 'Error inesperado al procesar el archivo' });
             }
+        } finally {
+            setCargando(false);
         }
     };
 
@@ -72,42 +87,47 @@ const Crear = ({ auth }) => {
 
             <div className="py-1">
                 <div className="max-w-[80%] mx-auto">
-                    <form onSubmit={guardarDatos} >
+                    <form onSubmit={cargarEmpleados}>
                         <div className="grid grid-cols-1 gap-4 mt-4">
-                            
-                                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                                    <div className="p-6 text-gray-900">
-
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                                            <div>
-                                                <InputLabel htmlFor="nombre" value="Archivo de excel" />
-                                                <input
-                                                    type="file"
-                                                    id="nombre"
-                                                    name="nombre"
-                                                    value={data.nombre}
-                                                    className="mt-1 block w-full"
-                                                    onChange={(e) => setData('nombre', e.target.value)}
-                                                />
-                                                <InputError message={errors.nombre} className="mt-2" />
-                                            </div>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                                <PrimaryButton
-                                                    type="submit"
-                                                    className={`w-full btn mx-0 flex items-center justify-center md:mx-auto border-2  py-2 px-4 rounded-md`}
-                                                    >
-                                                    Guardar
-                                                    <svg className="w-6 h-6 text-white " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M7.833 2c-.507 0-.98.216-1.318.576A1.92 1.92 0 0 0 6 3.89V21a1 1 0 0 0 1.625.78L12 18.28l4.375 3.5A1 1 0 0 0 18 21V3.889c0-.481-.178-.954-.515-1.313A1.808 1.808 0 0 0 16.167 2H7.833Z"/>
-                                                    </svg>
-                                                </PrimaryButton>
-                                            </div>
+                            <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                                <div className="p-6 text-gray-900">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="col-span-2">
+                                            <InputLabel htmlFor="fileEmpleados" value="Archivo de Excel" />
+                                            <input
+                                                type="file"
+                                                id="fileEmpleados"
+                                                name="fileEmpleados"
+                                                accept=".xlsx,.xls,.csv"
+                                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                onChange={cargarArchivo}
+                                                disabled={cargando}
+                                            />
+                                            {errorExcelEmpleados && (
+                                                <div className="mt-2">
+                                                    {Object.values(errorExcelEmpleados).map((error, index) => (
+                                                        <InputError key={index} message={error} className="mt-1" />
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
-
+                                        
+                                        <div className="flex items-end">
+                                            <PrimaryButton
+                                                type="submit"
+                                                className="w-full py-2 px-4 rounded-md"
+                                                disabled={cargando || !fileEmpleados}
+                                            >
+                                                {cargando ? 'Importando...' : 'Importar registros'}
+                                            </PrimaryButton>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="mt-4 p-3 bg-blue-50 rounded-md text-sm text-blue-700">
+                                        <strong>Formato permitido:</strong> Archivos Excel (.xlsx, .xls)
                                     </div>
                                 </div>
-                            
+                            </div>
                         </div>
                     </form>
                 </div>

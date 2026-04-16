@@ -113,10 +113,12 @@ class EmpleadosController extends Controller
 
     public function cargarEmpleados (Request $request){
         $this->validate($request, [
-            'file' => 'required|file|mimes:xls, xlsx',
+            'fileEmpleados' => 'required|file|mimes:xls,xlsx',
         ]);
 
-        Excel::import(new EmpleadosImport, 'empleados.xlsx');
+        $archivo = $request->file('fileEmpleados');
+
+        Excel::import(new EmpleadosImport, $archivo);
 
         return redirect('/empleados');
     }
